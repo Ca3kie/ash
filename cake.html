@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Birthday Cake</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+  :root{
+    --bg:#eaf1f6;
+    --title:#5fa8d3;
+    --titleText:#eaf6ff;
+  }
+
+  *{box-sizing:border-box}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--bg);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  }
+
+  .stage{
+    width:900px;
+    max-width:95vw;
+    height:700px;
+    position:relative;
+    text-align:center;
+    padding-top:40px;
+  }
+
+  /* TITLE */
+  .title{
+    display:inline-block;
+    padding:16px 30px;
+    background:var(--title);
+    color:var(--titleText);
+    font-weight:900;
+    font-size:42px;
+    border-radius:12px;
+    letter-spacing:.5px;
+    box-shadow:0 10px 20px rgba(0,0,0,.18);
+    cursor:pointer;
+    user-select:none;
+  }
+
+  /* CAKE AREA */
+  .cake-area{
+    position:relative;
+    margin:80px auto 0;
+    width:320px;
+  }
+
+  .cake-area img{
+    width:100%;
+    display:block;
+
+    /* 🎨 BOYISH COLOR TREATMENT */
+    filter:
+      hue-rotate(190deg)
+      saturate(0.75)
+      brightness(1.05)
+      contrast(1.05)
+      drop-shadow(0 20px 25px rgba(0,0,0,.25));
+
+    cursor:pointer;
+    user-select:none;
+  }
+
+  /* CANDLES */
+  .candles{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+
+  .candle{
+    position:absolute;
+    width:10px;
+    height:32px;
+    background:linear-gradient(#203040,#405a7a);
+    border-radius:4px;
+    transform:translate(-50%, -100%);
+    box-shadow:0 6px 10px rgba(0,0,0,.2);
+  }
+
+  .wick{
+    position:absolute;
+    top:-6px;
+    left:50%;
+    transform:translateX(-50%);
+    width:2px;
+    height:6px;
+    background:#222;
+  }
+
+  .flame{
+    position:absolute;
+    top:-20px;
+    left:50%;
+    transform:translateX(-50%);
+    width:10px;
+    height:14px;
+    background:radial-gradient(circle at 40% 35%,
+      #fff6b0 0 35%,
+      #ffb000 45% 70%,
+      #ff6a00 100%);
+    border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation:flicker .12s infinite alternate;
+  }
+
+  @keyframes flicker{
+    from{ transform:translateX(-50%) scale(.95) rotate(-3deg);}
+    to{ transform:translateX(-50%) scale(1.05) rotate(3deg);}
+  }
+
+  .candle.off .flame{
+    opacity:0;
+    animation:none;
+  }
+
+  .hint{
+    margin-top:18px;
+    color:#5c7488;
+    font-weight:600;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="title" id="blowBtn">HAPPY BIRTHDAY!</div>
+
+  <div class="cake-area" id="cakeArea">
+    <img src="cake.png" alt="Cake">
+    <div class="candles" id="candles"></div>
+  </div>
+
+  <div class="hint">
+    Click the cake to add candles · Click the title to blow them out
+  </div>
+
+</div>
+
+<script>
+  const cakeArea = document.getElementById("cakeArea");
+  const candlesLayer = document.getElementById("candles");
+  const blowBtn = document.getElementById("blowBtn");
+
+  // ADD CANDLE
+  cakeArea.addEventListener("click", (e) => {
+    const rect = cakeArea.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // only allow clicks in upper half (cake top)
+    if (y > rect.height * 0.45) return;
+
+    const candle = document.createElement("div");
+    candle.className = "candle";
+    candle.style.left = x + "px";
+    candle.style.top  = y + "px";
+
+    candle.innerHTML = `
+      <div class="wick"></div>
+      <div class="flame"></div>
+    `;
+
+    candlesLayer.appendChild(candle);
+  });
+
+  // BLOW OUT
+  blowBtn.addEventListener("click", () => {
+    document.querySelectorAll(".candle").forEach(c =>
+      c.classList.add("off")
+    );
+  });
+</script>
+
+</body>
+</html>
